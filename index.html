@@ -2,7 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#fdf5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>La Misión de Miki ✦ Para Alison</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -100,6 +103,9 @@ body::before{
   box-shadow:0 28px 70px rgba(120,90,80,.22), 0 6px 16px rgba(0,0,0,.07);
   cursor:pointer;
   user-select:none;
+  -webkit-user-select:none;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
 }
  
 #bg-layer{position:absolute;inset:0;transition:opacity .55s ease;}
@@ -324,12 +330,70 @@ body::before{
 @keyframes sfxPop{0%{transform:scale(.3) rotate(-8deg);opacity:0;}55%{transform:scale(1.15) rotate(-8deg);opacity:1;}100%{transform:scale(1) rotate(-8deg);opacity:1;}}
 @keyframes bounceArrow{0%,100%{transform:translateY(0);}50%{transform:translateY(4px);}}
  
-@media (max-width:560px){
-  #char-layer{padding-bottom:34%;}
-  #char-layer svg{height:54%;}
-  #dialogue{padding:14px 18px 20px;min-height:108px;}
+/* ════════ MÓVIL ════════ */
+@media (max-width:640px){
+  /* la novela usa casi toda la altura del teléfono en lugar de un 4:3 pequeño */
+  #vn{
+    width:100vw;
+    aspect-ratio:auto;
+    height:calc(100svh - 12px);
+    height:calc(100dvh - 12px);
+    min-height:520px;
+    margin:6px auto;
+    border-radius:20px;
+    border-width:2px;
+  }
+  #vignette{border-radius:20px;}
+ 
+  /* Miki más arriba para no chocar con la caja de diálogo */
+  #char-layer{align-items:center;padding-bottom:30%;}
+  #char-layer svg{height:min(46vh,360px);max-height:none;}
+ 
+  /* caja de diálogo más cómoda y legible */
+  #dialogue{
+    left:10px;right:10px;bottom:10px;
+    padding:16px 18px 26px;
+    min-height:120px;border-radius:18px;
+  }
+  #nametag{font-size:15px;padding:3px 16px;}
+  #dtext{font-size:16.5px;line-height:1.5;}
+  #dtext.narr{font-size:18px;}
+  #advance{font-size:20px;right:18px;bottom:12px;}
+ 
+  /* botones de decisión grandes para el dedo */
+  #choices{bottom:auto;top:50%;transform:translateY(-50%);gap:14px;padding:0 22px;}
+  #choices.show{transform:translateY(-50%);}
+  .choice-btn{
+    min-width:88%;font-size:16px;padding:17px 22px;border-radius:18px;
+  }
+  .end-btn{font-size:15px;padding:13px 26px;}
+  #endbtn-wrap{right:16px;bottom:20px;}
+ 
+  /* pips y sonido un poco más grandes y separados del borde */
+  #scene-pips{top:12px;left:14px;}
+  .pip{width:9px;height:9px;}
+  #sound-toggle{width:40px;height:40px;font-size:17px;top:10px;right:12px;}
+ 
+  #toast{font-size:14px;padding:10px 20px;top:14px;}
+ 
+  /* título */
+  .title-main{font-size:clamp(40px,13vw,64px);}
+  #title-cat > div{width:140px !important;}
+ 
+  /* final */
   .fin-stats{grid-template-columns:repeat(2,1fr);}
-  .letter{padding:1.6rem 1.5rem;}
+  .letter{padding:1.6rem 1.4rem;}
+  .letter p{font-size:15px;}
+  .letter .msg{font-size:17px;}
+  .fin-btns{flex-direction:column;width:100%;max-width:340px;}
+  .celebrate-btn,.replay-btn{width:100%;padding:15px;}
+}
+ 
+/* pantallas muy bajas (teléfono en horizontal) */
+@media (max-height:480px) and (max-width:900px){
+  #vn{height:calc(100dvh - 8px);min-height:300px;}
+  #char-layer svg{height:min(42vh,240px);}
+  #dialogue{min-height:96px;padding:10px 16px 20px;}
 }
 </style>
 </head>
@@ -349,7 +413,7 @@ body::before{
 </div>
  
 <!-- ═══ NOVELA VISUAL ═══ -->
-<div id="vn" onclick="advance()">
+<div id="vn">
   <div id="bg-layer"></div>
   <div id="screentone"></div>
   <div id="char-layer"></div>
@@ -530,7 +594,11 @@ function miki(expr, opts){
   s += '<path d="M64 128 Q110 156 156 128" fill="none" stroke="#85c8ea" stroke-width="10" stroke-linecap="round"/>';
   s += '<path d="M64 128 Q110 156 156 128" fill="none" stroke="#5aa9d4" stroke-width="3" stroke-linecap="round" opacity=".5"/>';
   s += '<circle cx="110" cy="156" r="9" fill="#ecc285" stroke="#d4a85f" stroke-width="2"/>';
-  s += '<circle cx="110" cy="156" r="3.5" fill="#f7dca8"/>';
+  /* plaquita: pequeña galaxia con estrellitas — guiño sutil */
+  s += '<circle cx="110" cy="156" r="5.5" fill="#3a2e4a" opacity=".55"/>';
+  s += '<circle cx="108" cy="154" r="1" fill="#f7dca8"/>';
+  s += '<circle cx="112" cy="157" r=".8" fill="#fce8ee"/>';
+  s += '<circle cx="110" cy="155" r=".7" fill="#cfe3f5"/>';
  
   /* cara */
   s += '<g class="face">'+(FACES[expr]||FACES.neutral)+'</g>';
@@ -559,12 +627,26 @@ function miki(expr, opts){
       '<circle cx="84" cy="80" r="18" fill="#cfe3f5" opacity=".22"/><circle cx="136" cy="80" r="18" fill="#cfe3f5" opacity=".22"/>'+
       '<path d="M76 70 q6 -5 14 -2" stroke="#fff" stroke-width="2" fill="none" opacity=".6"/>';
   } else if(acc === 'lightstick'){
+    /* sable de luz pastel — guiño sutil a Star Wars */
     s += '<g transform="translate(0,0)">'+
-      '<rect x="176" y="92" width="9" height="38" rx="4" fill="#e0cdb8"/>'+
-      '<circle cx="180" cy="70" r="26" fill="#f6c9d4" opacity=".5"/>'+
-      '<circle cx="180" cy="70" r="17" fill="#fce8ee"/>'+
-      '<circle cx="180" cy="70" r="17" fill="none" stroke="#ec9fb0" stroke-width="2"/>'+
-      '<text x="174" y="75" font-family="Baloo 2,cursive" font-size="14" fill="#ec9fb0" font-weight="800">✦</text>'+
+      /* mango metálico */
+      '<rect x="172" y="118" width="14" height="34" rx="4" fill="#cdbfae"/>'+
+      '<rect x="172" y="118" width="14" height="34" rx="4" fill="none" stroke="#a9967f" stroke-width="1.5"/>'+
+      '<rect x="174" y="126" width="10" height="2.5" fill="#8a7660" opacity=".7"/>'+
+      '<rect x="174" y="133" width="10" height="2.5" fill="#8a7660" opacity=".7"/>'+
+      '<rect x="174" y="140" width="10" height="2.5" fill="#8a7660" opacity=".7"/>'+
+      '<circle cx="179" cy="146" r="2" fill="#ec9fb0"/>'+
+      /* emisor */
+      '<rect x="174" y="112" width="10" height="8" rx="2" fill="#e0cdb8"/>'+
+      /* halo de la hoja */
+      '<rect x="170" y="30" width="18" height="86" rx="9" fill="#f6c9d4" opacity=".4"/>'+
+      /* hoja pastel */
+      '<rect x="174" y="32" width="10" height="82" rx="5" fill="#fce8ee">'+
+        '<animate attributeName="opacity" values="1;.85;1" dur="1.6s" repeatCount="indefinite"/></rect>'+
+      '<rect x="176" y="34" width="6" height="78" rx="3" fill="#ffffff" opacity=".85"/>'+
+      /* punta brillante */
+      '<circle cx="179" cy="34" r="6" fill="#fff" opacity=".7"/>'+
+      '<text x="171" y="26" font-family="Baloo 2,cursive" font-size="13" fill="#ec9fb0" font-weight="800" opacity=".8">✦</text>'+
       '</g>';
   } else if(acc === 'letter'){
     s += '<g transform="translate(0,4)">'+
@@ -1008,6 +1090,19 @@ document.addEventListener('keydown',(e)=>{
     if(e.code==='Space'||e.code==='Enter'){ e.preventDefault(); advance(); }
   }
 });
+ 
+/* avanzar al tocar la novela — un solo disparo por toque (evita doble en móvil) */
+(function(){
+  const vn=document.getElementById('vn');
+  let lock=false;
+  function isUI(t){ return t.closest('.choice-btn, .end-btn, #sound-toggle'); }
+  vn.addEventListener('pointerup',(e)=>{
+    if(isUI(e.target)) return;     /* botones manejan su propio click */
+    if(lock) return;
+    lock=true; setTimeout(()=>lock=false,180);
+    advance();
+  });
+})();
  
 /* ══════════ SONIDO (opcional, off por defecto) ══════════ */
 function initAudio(){ try{ audioCtx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} }
